@@ -1,0 +1,42 @@
+import requests
+import os
+
+# ðŸ”‘ Replace with your actual Groq API key or use environment variable
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "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")
+
+# ðŸ¤– Choose the model: Mixtral is smart and fast!
+MODEL = "llama3-8b-8192"
+
+# ðŸ” Chat loop
+print("ðŸŸ¢ Groq Terminal ChatBot - Type 'exit' to quit")
+
+chat_history = []
+
+while True:
+    user_input = input("ðŸ‘¤ You: ")
+    if user_input.lower() == "exit":
+        print("ðŸ‘‹ Exiting chat. Bye!")
+        break
+
+    # Add user message to chat history
+    chat_history.append({"role": "user", "content": user_input})
+
+    response = requests.post(
+        "https://api.groq.com/openai/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {GROQ_API_KEY}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "model": MODEL,
+            "messages": chat_history
+        }
+    )
+
+    if response.status_code == 200:
+        reply = response.json()["choices"][0]["message"]["content"]
+        print("ðŸ¤– GroqBot:", reply)
+        chat_history.append({"role": "assistant", "content": reply})
+    else:
+        print("âŒ Error:", response.status_code, response.text)
